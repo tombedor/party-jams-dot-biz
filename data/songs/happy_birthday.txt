@@ -1,0 +1,13 @@
+happy,1
+birth,1
+day,2/3
+to,2/3
+you,2/3
+its,1/2
+your,1/2
+special day,3
+buy,2/3
+your,2/3
+self,2/3
+something nice,2
+you deserve it,4
