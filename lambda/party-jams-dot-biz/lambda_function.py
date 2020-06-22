@@ -1,9 +1,6 @@
 import boto3
-from pydub import AudioSegment
 import hashlib
-# hash_object = hashlib.md5(b'Hello World')
 import sox
-from random import shuffle
 
 BUCKET = 'party-jams-dot-biz-sounds'
 BACKING_TRACK_FOLDER = 'backing_tracks'
@@ -16,25 +13,22 @@ BEAT_LENGTH_SECONDS = BPM / 60
 sample_event =  {
     "lyrics" :
   [
-       {"phrase" : "hello", "beat" : "1"},
-       {"phrase" : "world", "beat" : "1"},
-       {"phrase" : "nice", "beat" : "1"},
-       {"phrase" : "to", "beat" : "1/2"},
-       {"phrase" : "meet you", "beat" : "9/2"},
+       {"phrase" : "hello", "beats" : "1"},
+       {"phrase" : "world", "beats" : "1"},
+       {"phrase" : "nice", "beats" : "1"},
+       {"phrase" : "to", "beats" : "1/2"},
+       {"phrase" : "meet you", "beats" : "9/2"},
   ]
 }    
 
 def lambda_handler(event, context):
-    
     polly = boto3.client('polly')
     s3 = boto3.client('s3')
 
     lyrics = event['lyrics']
     local_files = []
-    print("lyrics = " + str(lyrics))
     for lyric in lyrics:
         phrase = lyric['phrase']
-        print("forming phrase: " + phrase)
         hex_digest = hashlib.md5(bytes(phrase, 'utf-8')).hexdigest()
         local_file = TMP_DIR + '/' + hex_digest + '.mp3'
 
