@@ -24,6 +24,8 @@ Either:
 ### TODO
 
 1. Figure out how to generate sound file in cloud. Probably dockerized. More difficult than local because of sound card interactions.
+	1. https://github.com/serverlesspub/ffmpeg-aws-lambda-layer
+	1. https://stackoverflow.com/questions/7629873/how-do-i-mix-audio-files-using-python
 
 1. Spin up full API:
 	1. Create song

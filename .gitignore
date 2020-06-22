@@ -1,0 +1,9 @@
+deployable/
+log/
+target/
+external_libraries/
+
+.idea/
+.vscode/
+.terraform/
+*tfstate
