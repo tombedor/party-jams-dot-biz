@@ -5,16 +5,13 @@ import hashlib
 import sox
 from random import shuffle
 
-bucket = 'party-jams-dot-biz-sounds'
-folder = 'words'
-tmp_dir = '/tmp'
-# tmp_dir = 'log/'
-    # tmp_dir = 'log/'
+BUCKET = 'party-jams-dot-biz-sounds'
+BACKING_TRACK_FOLDER = 'backing_tracks'
+TMP_DIR = '/tmp'
 
-# def lambda_handler2(event, context):
-    # engine = pyttsx3.init()
-    # engine.save_to_file('Hello World', 'test.mp3')
-    # engine.runAndWait()
+SONG = "smooth_jazz_60_bpm.mp3"
+BPM = 60
+BEAT_LENGTH_SECONDS = BPM / 60
 
 sample_event =  {
     "lyrics" :
@@ -28,7 +25,7 @@ sample_event =  {
 }    
 
 def lambda_handler(event, context):
-    print('running lambda')
+    
     polly = boto3.client('polly')
     s3 = boto3.client('s3')
 
@@ -39,21 +36,40 @@ def lambda_handler(event, context):
         phrase = lyric['phrase']
         print("forming phrase: " + phrase)
         hex_digest = hashlib.md5(bytes(phrase, 'utf-8')).hexdigest()
-        local_file = tmp_dir + '/' + hex_digest + '.mp3'
-        local_wav = tmp_dir + '/' + hex_digest + '.wav'
-        response = polly.synthesize_speech(VoiceId='Joanna', OutputFormat='mp3', Text = phrase)
+        local_file = TMP_DIR + '/' + hex_digest + '.mp3'
 
+        # First, write basic response to local
+        response = polly.synthesize_speech(VoiceId='Joanna', OutputFormat='mp3', Text = phrase)
         with open(local_file, 'wb') as fout:
             fout.write(response['AudioStream'].read())
-        # sound = AudioSegment.from_mp3(local_file)
-        # sound.export(local_wav, format="wav")
-        key = hex_digest + '.mp3'
-        local_files.append(local_file)
-        s3.upload_file(local_file, bucket, key)
-    shuffle(local_files)
+
+        # Figure out desired length of clip
+        clip_length = sox.file_info.duration(local_file)
+        scale_factor = clip_length / (BEAT_LENGTH_SECONDS * lyric['beats'])
+
+        # Resize clip and write
+        transformer = sox.Transformer()
+        transformer.tempo(scale_factor)
+
+        local_file_scaled = TMP_DIR + '/' + hex_digest + 'scaled' + '.mp3'
+        transformer.build(local_file, local_file_scaled)
+        local_files.append(local_file_scaled)
+
     cbn = sox.Combiner()
-    cbn.build(local_files, tmp_dir + '/shuffled.mp3', 'concatenate')
-    s3.upload_file(tmp_dir + '/shuffled.mp3', bucket,  'shuffled.mp3')
+    cbn.convert(n_channels = 1)
+    cbn.build(local_files, TMP_DIR + '/lyrics.mp3', 'concatenate')
+    s3.download_file(BUCKET, BACKING_TRACK_FOLDER + '/' + SONG, TMP_DIR + '/' + SONG)
+
+    backing_cbn = sox.Combiner()
+    backing_cbn.convert(n_channels = 1)
+    backing_cbn.build([TMP_DIR + '/lyrics.mp3', TMP_DIR + '/' + SONG], TMP_DIR + '/final.mp3', 'merge')
+
+    s3.upload_file(TMP_DIR + '/final.mp3', BUCKET, 'final.mp3')
+    
+
+    # cbn.build([TMP_DIR + '/lyrics.mp3', BUCKET + )
+    
+    # s3.upload_file(TMP_DIR + '/shuffled.mp3', BUCKET,  'shuffled.mp3')
 
 
 
@@ -67,7 +83,7 @@ def lambda_handler(event, context):
 
 
     # word = 'foo'
-    # local_file = tmp_dir + word + '.mp3'
+    # local_file = TMP_DIR + word + '.mp3'
     # key = folder + word + '.mp3'
     # polly = boto3.client('polly')
     # s3 = boto3.client('s3')
@@ -83,16 +99,16 @@ def lambda_handler(event, context):
     # with open(local_file, 'wb') as fout:
     #     fout.write(response['AudioStream'].read())
 
-    # local_file2 = tmp_dir + 'word2.mp3'
+    # local_file2 = TMP_DIR + 'word2.mp3'
     # with open(local_file2, 'wb') as fout:
     #     fout.write(response2['AudioStream'].read())        
 
     # sound1 = AudioSegment.from_mp3(local_file)
     # sound2 = AudioSegment.from_mp3(local_file2)
     # output = sound1.overlay(sound2)
-    # output.export(tmp_dir + 'combined.mp3')
+    # output.export(TMP_DIR + 'combined.mp3')
 
-    # s3.upload_file(tmp_dir + 'combined.mp3', bucket, key)
+    # s3.upload_file(TMP_DIR + 'combined.mp3', BUCKET, key)
 
 if __name__ == 'main':
     lambda_handler(sample_event, {})
