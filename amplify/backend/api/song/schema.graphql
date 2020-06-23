@@ -1,5 +1,32 @@
-type Todo @model {
-  id: ID!
+type Song @model {
+  hash: String!
   name: String!
-  description: String
+  lyrics: [OutputLyric]!
+  # TODO: figure out how to represent the actual song
+}
+
+type OutputLyric {
+  phrase: String!
+  seconds_length: Float!
+}
+
+type InputLyric {
+  phrase: String!
+  beats: Float!
+}
+
+type BackingTrack {
+  hash: String!
+  bmp: Int!
+  # TODO: figure out how to represent the actual song
+}
+
+# create should be Lambda, fetch should be DynamoDB
+# TODO: Fix errors and get `amplify push` to work
+type Query {
+  createSong(
+    name: String
+    backing_track: BackingTrack
+    input_lyric: [InputLyric]
+  ): [Song] @function(name: "party-jams-dot-biz")
 }
