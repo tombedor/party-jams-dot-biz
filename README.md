@@ -18,19 +18,19 @@ Either:
 
 1. Greeting cards? Event invite? Even just making calendar integration easy would be an improvement over some sites.
 
-### DONE
-* POC script that works on OSX
-
 ### TODO
-
-1. Figure out how to generate sound file in cloud. Probably dockerized. More difficult than local because of sound card interactions.
-	1. https://github.com/serverlesspub/ffmpeg-aws-lambda-layer
-	1. https://stackoverflow.com/questions/7629873/how-do-i-mix-audio-files-using-python
 
 1. Spin up full API:
 	1. Create song
 	1. Retrieve song
 
 1. Spin up a simple website. Ensure that it dynamically scales.
+	1. AWS amplify probably with rest endpoints. unicorn rides tutorial pretty close
 
-1. Add front end graphics.
+### DONE
+1. POC script that works on OSX
+
+1. Figure out how to generate sound file in cloud. Probably dockerized. More difficult than local because of sound card interactions.
+	1. https://github.com/serverlesspub/ffmpeg-aws-lambda-layer
+	1. https://stackoverflow.com/questions/7629873/how-do-i-mix-audio-files-using-python
+
