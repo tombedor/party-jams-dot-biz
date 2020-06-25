@@ -3,43 +3,21 @@
 
 export const createSong = /* GraphQL */ `
   mutation CreateSong(
-    $input: CreateSongInput!
-    $condition: ModelSongConditionInput
+    $name: String
+    $backing_track: BackingTrack
+    $input_lyric: [Lyric]
   ) {
-    createSong(input: $input, condition: $condition) {
-      id
+    createSong(
+      name: $name
+      backing_track: $backing_track
+      input_lyric: $input_lyric
+    ) {
+      hash
       name
-      description
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const updateSong = /* GraphQL */ `
-  mutation UpdateSong(
-    $input: UpdateSongInput!
-    $condition: ModelSongConditionInput
-  ) {
-    updateSong(input: $input, condition: $condition) {
-      id
-      name
-      description
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const deleteSong = /* GraphQL */ `
-  mutation DeleteSong(
-    $input: DeleteSongInput!
-    $condition: ModelSongConditionInput
-  ) {
-    deleteSong(input: $input, condition: $condition) {
-      id
-      name
-      description
-      createdAt
-      updatedAt
+      lyrics {
+        phrase
+        seconds_length
+      }
     }
   }
 `;

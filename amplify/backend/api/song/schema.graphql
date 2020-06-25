@@ -1,4 +1,33 @@
-type Song @model {
+schema {
+  mutation: Mutation
+  query: Query
+}
+
+
+
+input Lyric {
+  phrase: String!
+  beats: Float!
+}
+
+input BackingTrack {
+  hash: String!
+  bmp: Int!
+  # TODO: figure out how to represent the actual song
+}
+
+# create should be Lambda, fetch should be DynamoDB
+# TODO: Fix errors and get `amplify push` to work
+type Mutation {
+  createSong(
+    name: String
+    backing_track: BackingTrack
+    input_lyric: [Lyric]
+  ): [Song] @function(name: "party-jams-dot-biz")
+}
+
+
+type Song {
   hash: String!
   name: String!
   lyrics: [OutputLyric]!
@@ -10,23 +39,9 @@ type OutputLyric {
   seconds_length: Float!
 }
 
-type InputLyric {
-  phrase: String!
-  beats: Float!
-}
 
-type BackingTrack {
-  hash: String!
-  bmp: Int!
-  # TODO: figure out how to represent the actual song
-}
-
-# create should be Lambda, fetch should be DynamoDB
-# TODO: Fix errors and get `amplify push` to work
 type Query {
-  createSong(
-    name: String
-    backing_track: BackingTrack
-    input_lyric: [InputLyric]
-  ): [Song] @function(name: "party-jams-dot-biz")
+  getSong: Song
 }
+
+
