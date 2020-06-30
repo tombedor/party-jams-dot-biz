@@ -183,13 +183,9 @@
             "defaultValue" : null
           } ],
           "type" : {
-            "kind" : "LIST",
-            "name" : null,
-            "ofType" : {
-              "kind" : "OBJECT",
-              "name" : "Song",
-              "ofType" : null
-            }
+            "kind" : "OBJECT",
+            "name" : "Song",
+            "ofType" : null
           },
           "isDeprecated" : false,
           "deprecationReason" : null
