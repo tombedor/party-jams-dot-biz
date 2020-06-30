@@ -23,7 +23,7 @@ type Mutation {
     name: String
     backing_track: BackingTrack
     input_lyric: [Lyric]
-  ): Song
+  ): [Song] @function(name: "party-jams-dot-biz")
 }
 
 
