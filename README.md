@@ -20,9 +20,9 @@ Either:
 
 ### TODO
 
-1. Connect AppSync / Amplitude to lambda
-	1. Figure out how to deploy lambda function that appsync understands
-	1. cloud9 might be a good dev option?
+1. Amplitude is too complicated, just do this tutorial:
+	https://aws.amazon.com/getting-started/hands-on/build-serverless-web-app-lambda-apigateway-s3-dynamodb-cognito/module-4/
+	just hash the params and use that to fetch the song	
 
 1. Spin up full API:
 	1. Create song
