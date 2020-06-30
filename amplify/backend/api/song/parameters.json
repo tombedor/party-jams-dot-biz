@@ -1,5 +1,0 @@
-{
-    "AppSyncApiName": "song",
-    "DynamoDBBillingMode": "PAY_PER_REQUEST",
-    "DynamoDBEnableServerSideEncryption": "false"
-}
