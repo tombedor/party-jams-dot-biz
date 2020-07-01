@@ -30,7 +30,132 @@
 		"EmptyResource": {
 			"Type": "Custom::EmptyResource",
 			"Condition": "AlwaysFalse"
-		  }
+		},
+		"PartyJamLambdaDataSource": {
+			"Type": "AWS::AppSync::DataSource",
+			"Properties": {
+				"ApiId": {
+					"Ref": "AppSyncApiId"
+				},
+				"Name": "PartyJamFunction",
+				"Type": "AWS_LAMBDA",
+				"ServiceRoleArn": {
+					"Fn::GetAtt": [
+						"PartyJamLambdaDataSourceRole",
+						"Arn"
+					]
+				},
+				"LambdaConfig": {
+					"LambdaFunctionArn": {
+						"Fn::Sub": [
+							"arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:partyjamfunction-${env}",
+							{
+								"env": {
+									"Ref": "env"
+								}
+							}
+						]
+					}
+				}
+			}
+		},
+		"PartyJamLambdaDataSourceRole": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"RoleName": {
+					"Fn::Sub": [
+						"PartyJamLambdaDataSourceRole-${env}",
+						{
+							"env": {
+								"Ref": "env"
+							}
+						}
+					]
+				},
+				"AssumeRolePolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Principal": {
+								"Service": "appsync.amazonaws.com"
+							},
+							"Action": "sts:AssumeRole"
+						}
+					]
+				},
+				"Policies": [
+					{
+						"PolicyName": "InvokeLambdaFunction",
+						"PolicyDocument": {
+							"Version": "2012-10-17",
+							"Statement": [
+								{
+									"Effect": "Allow",
+									"Action": [
+										"lambda:invokeFunction"
+									],
+									"Resource": [
+										{
+											"Fn::Sub": [
+												"arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:partyjamfunction-${env}",
+												{
+													"env": {
+														"Ref": "env"
+													}
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					}
+				]
+			}
+		},
+		"QueryPartyJamResolver": {
+			"Type": "AWS::AppSync::Resolver",
+			"Properties": {
+				"ApiId": {
+					"Ref": "AppSyncApiId"
+				},
+				"DataSourceName": {
+					"Fn::GetAtt": [
+						"PartyJamLambdaDataSource",
+						"Name"
+					]
+				},
+				"TypeName": "Query",
+				"FieldName": "partyjam",
+				"RequestMappingTemplateS3Location": {
+					"Fn::Sub": [
+						"s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/Query.partyjam.req.vtl",
+						{
+							"S3DeploymentBucket": {
+								"Ref": "S3DeploymentBucket"
+							},
+							"S3DeploymentRootKey": {
+								"Ref": "S3DeploymentRootKey"
+							}
+						}
+					]
+				},
+				"ResponseMappingTemplateS3Location": {
+					"Fn::Sub": [
+						"s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/Query.partyjam.res.vtl",
+						{
+							"S3DeploymentBucket": {
+								"Ref": "S3DeploymentBucket"
+							},
+							"S3DeploymentRootKey": {
+								"Ref": "S3DeploymentRootKey"
+							}
+						}
+					]
+				}
+			}
+		}
 	},
 	"Conditions": {
 		"HasEnvironmentParameter": {
