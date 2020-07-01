@@ -1,0 +1,18 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Lyric {
+  seconds: Float!
+  phrase: String!
+}
+
+type Song {
+  url: String!
+  lyrics: [Lyric]
+}
+
+type Query {
+  getChant(word: String!): Song
+}
