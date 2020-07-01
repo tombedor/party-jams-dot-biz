@@ -30,7 +30,7 @@
 		"EmptyResource": {
 			"Type": "Custom::EmptyResource",
 			"Condition": "AlwaysFalse"
-		}
+		  }
 	},
 	"Conditions": {
 		"HasEnvironmentParameter": {
