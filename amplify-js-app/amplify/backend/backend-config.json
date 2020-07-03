@@ -30,12 +30,5 @@
 			"providerPlugin": "awscloudformation"
 		}
 	},
-	"function": {
-		"partyjam": {
-			"build": true,
-			"providerPlugin": "awscloudformation",
-			"service": "Lambda",
-			"dependsOn": []
-		}
-	}
+	"function": {}
 }
