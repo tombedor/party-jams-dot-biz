@@ -31,24 +31,24 @@
 			"Type": "Custom::EmptyResource",
 			"Condition": "AlwaysFalse"
 		},
-		"PartyJamLambdaDataSource": {
+		"GetchantLambdaDataSource": {
 			"Type": "AWS::AppSync::DataSource",
 			"Properties": {
 				"ApiId": {
 					"Ref": "AppSyncApiId"
 				},
-				"Name": "PartyJamFunction",
+				"Name": "GetchantFunction",
 				"Type": "AWS_LAMBDA",
 				"ServiceRoleArn": {
 					"Fn::GetAtt": [
-						"PartyJamLambdaDataSourceRole",
+						"GetchantLambdaDataSourceRole",
 						"Arn"
 					]
 				},
 				"LambdaConfig": {
 					"LambdaFunctionArn": {
 						"Fn::Sub": [
-							"arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:partyjamfunction-${env}",
+							"arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:getchant-${env}",
 							{
 								"env": {
 									"Ref": "env"
@@ -59,12 +59,12 @@
 				}
 			}
 		},
-		"PartyJamLambdaDataSourceRole": {
+		"GetchantLambdaDataSourceRole": {
 			"Type": "AWS::IAM::Role",
 			"Properties": {
 				"RoleName": {
 					"Fn::Sub": [
-						"PartyJamLambdaDataSourceRole-${env}",
+						"GetchantLambdaDataSourceRole-${env}",
 						{
 							"env": {
 								"Ref": "env"
@@ -98,7 +98,7 @@
 									"Resource": [
 										{
 											"Fn::Sub": [
-												"arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:partyjamfunction-${env}",
+												"arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:getchant-${env}",
 												{
 													"env": {
 														"Ref": "env"
@@ -114,7 +114,7 @@
 				]
 			}
 		},
-		"QueryPartyJamResolver": {
+		"QueryGetchantResolver": {
 			"Type": "AWS::AppSync::Resolver",
 			"Properties": {
 				"ApiId": {
@@ -122,15 +122,15 @@
 				},
 				"DataSourceName": {
 					"Fn::GetAtt": [
-						"PartyJamLambdaDataSource",
+						"GetchantLambdaDataSource",
 						"Name"
 					]
 				},
 				"TypeName": "Query",
-				"FieldName": "getChant",
+				"FieldName": "getchant",
 				"RequestMappingTemplateS3Location": {
 					"Fn::Sub": [
-						"s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/Query.partyjam.req.vtl",
+						"s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/Query.getchant.req.vtl",
 						{
 							"S3DeploymentBucket": {
 								"Ref": "S3DeploymentBucket"
@@ -143,7 +143,7 @@
 				},
 				"ResponseMappingTemplateS3Location": {
 					"Fn::Sub": [
-						"s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/Query.partyjam.res.vtl",
+						"s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/Query.getchant.res.vtl",
 						{
 							"S3DeploymentBucket": {
 								"Ref": "S3DeploymentBucket"

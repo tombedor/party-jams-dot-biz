@@ -13,5 +13,5 @@ type Song {
 }
 
 type Query {
-  getChant(word: String!): Song
+  getchant(word: String!): Song
 }

@@ -11,7 +11,7 @@ async function createNewTodo() {
     description: `Realtime and Offline (${new Date().toLocaleString()})`,
   };
 
-  return await API.graphql(graphqlOperation(getChant, { word: "pie" }));
+  return await API.graphql(graphqlOperation(getchant, { word: "pie" }));
 }
 
 const MutationButton = document.getElementById("MutationEventButton");
