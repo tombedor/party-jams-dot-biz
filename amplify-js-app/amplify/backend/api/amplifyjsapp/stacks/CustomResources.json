@@ -127,7 +127,7 @@
 					]
 				},
 				"TypeName": "Query",
-				"FieldName": "partyjam",
+				"FieldName": "getChant",
 				"RequestMappingTemplateS3Location": {
 					"Fn::Sub": [
 						"s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/Query.partyjam.req.vtl",

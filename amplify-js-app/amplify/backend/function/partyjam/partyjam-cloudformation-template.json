@@ -68,7 +68,7 @@
 				"Timeout": "25",
 				"Code": {
 					"S3Bucket": "amplify-amplifyjsapp-production-83029-deployment",
-					"S3Key": "amplify-builds/partyjam-7942665567646a4d4367-build.zip"
+					"S3Key": "amplify-builds/partyjam-5148335a633038306c6a-build.zip"
 				}
 			}
 		},
