@@ -20,12 +20,8 @@ Either:
 
 ### TODO
 
-1. Amplitude is too complicated, just do this tutorial:
-	restart: https://docs.amplify.aws/cli/graphql-transformer/resolvers#add-a-custom-resolver-that-targets-an-aws-lambda-function
-	get that push to work
-	https://aws.amazon.com/getting-started/hands-on/build-serverless-web-app-lambda-apigateway-s3-dynamodb-cognito/module-4/
-	just hash the params and use that to fetch the song	
-	amplify push to work, should be off and running then
+1. Amplitude is working now. Just need to make sure backing track is uploaded, and test in javascript.
+
 
 1. Spin up full API:
 	1. Create song
