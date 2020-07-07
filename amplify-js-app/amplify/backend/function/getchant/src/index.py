@@ -25,7 +25,7 @@ def handler(event, context):
     lyrics = getchant_lyrics(event['word'])
     song = "shots"
     bpm = BACKING_TRACKS[song]['bpm']
-    beat_length_seconds = bpm / 60
+    seconds_per_beat = 60 / bpm
     song_file = BACKING_TRACKS[song]['file']
 
     # TODO: skip all of this if the s3 object already exists
@@ -37,7 +37,8 @@ def handler(event, context):
         hex_digest = hashlib.md5(bytes(pprint.pformat(lyric), 'utf-8')).hexdigest()
         phrase = lyric['phrase']
         local_file = TMP_DIR + '/' + hex_digest + '.mp3'
-        local_file_scaled = TMP_DIR + '/' + hex_digest + '-scaled' + '.mp3'
+        local_file_trimmed = TMP_DIR + '/' + hex_digest + '-trimmed.mp3'
+        local_file_scaled = TMP_DIR + '/' + hex_digest + '-scaled.mp3'
         if not os.path.exists(local_file_scaled): # The same phrase might exists more than once
             # First, write basic response to local
             response = polly.synthesize_speech(
@@ -45,14 +46,23 @@ def handler(event, context):
             with open(local_file, 'wb') as fout:
                 fout.write(response['AudioStream'].read())
 
-            # Figure out desired length of clip
-            clip_length = sox.file_info.duration(local_file)
-            scale_factor = clip_length / (beat_length_seconds * lyric['beats'])
+            # Trim silence
+            transformer = sox.Transformer()
+            transformer.silence(1, 0.1,0.01)
+            transformer.build(local_file, local_file_trimmed)
+
+            # Figure out desired length of clip            
+            clip_length = sox.file_info.duration(local_file_trimmed)
+            print('clip_length = ' + str(clip_length))
+            scale_factor = clip_length / (seconds_per_beat * lyric['beats'])
+            print('scale factor for word: ' + phrase + ' = ' + str(scale_factor))
 
             # Resize clip and write
             transformer = sox.Transformer()
             transformer.tempo(scale_factor)
-            transformer.build(local_file, local_file_scaled)
+            transformer.build(local_file_trimmed, local_file_scaled)
+            # This is wrong somehow. Unsure if it is silence or some kind of problem with the splicing together
+            print("clip length scaled = " + str(sox.file_info.duration(local_file_scaled)))
         local_files.append(local_file_scaled)
 
     print('concatenating lyric files')
@@ -72,20 +82,21 @@ def handler(event, context):
 
     print('combining lyric and backing tracks')
     print(time() - start_time)
+    final_filename = str(round(time())) + "-final.mp3"
     backing_cbn.build([TMP_DIR + '/lyrics.mp3', TMP_DIR +
-                       '/' + song_file], TMP_DIR + '/final.mp3', 'merge')
+                       '/' + song_file], TMP_DIR + '/' + final_filename, 'merge')
 
 
     print('uploading track')
     print(time() - start_time)
-    s3.upload_file(TMP_DIR + '/final.mp3', BUCKET, 'final.mp3')
+    s3.upload_file(TMP_DIR + '/' + final_filename, BUCKET, final_filename)
 
     return {
-        "url": "s3://" + BUCKET + "/final.mp3",
-        "lyrics": [{"phrase": l['phrase'], "seconds": l['beats'] * beat_length_seconds} for l in lyrics]
+        "url": "s3://" + BUCKET + "/" + final_filename,
+        "lyrics": [{"phrase": l['phrase'], "seconds": l['beats'] * seconds_per_beat} for l in lyrics]
     }
 
 
 def getchant_lyrics(word):
-    beats = [1, 1, 1/3, 1/3, 1/3]*4
+    beats = [1, 1, 2/3, 2/3, 2/3]*4
     return [{"phrase": word, "beats": b} for b in beats]
